@@ -31,17 +31,30 @@
 
             // Generate shuffled deck with one orientation, display orientation chosen randomly
             const generateCards = (table) => {
-                const newCards = [];
-                for (let i = 1; i <= 12; i++) {
-                    // Decide orientation once when creating the card
-                    const useNormalOrder = Math.random() > 0.5;
-                    newCards.push({
-                        table: table,
-                        factor: i,
-                        answer: table * i,
-                        question: useNormalOrder ? `${table} × ${i}` : `${i} × ${table}`
-                    });
-                }
+                let newCards;
+                do {
+                    newCards = [];
+                    for (let i = 1; i <= 12; i++) {
+                        const questionKey = `${table}x${i}`;
+                        const alreadyCorrect = correctQuestions.has(questionKey);
+
+                        // For questions answered correctly, only include them with 50% probability.
+                        if (alreadyCorrect && Math.random() < 0.5) {
+                            continue;
+                        }
+
+                        // Decide orientation once when creating the card
+                        const useNormalOrder = Math.random() > 0.5;
+                        newCards.push({
+                            table: table,
+                            factor: i,
+                            answer: table * i,
+                            question: useNormalOrder ? `${table} × ${i}` : `${i} × ${table}`
+                        });
+                    }
+                // Re-generate if deck is empty (can happen if all questions are correct and get skipped).
+                } while (newCards.length === 0);
+
                 // Shuffle the deck
                 return newCards.sort(() => Math.random() - 0.5);
             };
