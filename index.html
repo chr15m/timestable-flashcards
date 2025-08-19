@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <style>
         @import url('https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css');
     </style>
@@ -16,7 +17,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         const TimesTablesFlashCards = () => {
             const [selectedTable, setSelectedTable] = useState(null);
@@ -28,6 +29,8 @@
             const [recentResults, setRecentResults] = useState([]); // Track last 12 results
             const [correctQuestions, setCorrectQuestions] = useState(new Set()); // Track which unique questions answered correctly
             const [skippedCurrent, setSkippedCurrent] = useState(false);
+            const [completedStats, setCompletedStats] = useState({});
+            const jsConfettiRef = useRef();
 
             // Generate shuffled deck with one orientation, display orientation chosen randomly
             const generateCards = (table) => {
@@ -58,6 +61,41 @@
                 // Shuffle the deck
                 return newCards.sort(() => Math.random() - 0.5);
             };
+
+            useEffect(() => {
+                jsConfettiRef.current = new JSConfetti();
+                const storedCompleted = JSON.parse(localStorage.getItem('timestables') || '{}');
+                setCompletedStats(storedCompleted);
+            }, []);
+
+            useEffect(() => {
+                if (correctQuestions.size === 12) {
+                    // Confetti effect
+                    const emojiSets = [
+                        ['🌈', '⚡️', '💥', '✨', '💫', '🌸'],
+                        ['🦄', '🎉', '🎊', '🎈', '🎁'],
+                        ['⭐', '🌟', '🤩', '🥳', '💯'],
+                        ['👍', '🙌', '👏', '👑', '🏆'],
+                        ['🍎', '🍌', '🍓', '🍍', '🥝']
+                    ];
+                    
+                    emojiSets.forEach((emojis, index) => {
+                        setTimeout(() => {
+                            jsConfettiRef.current.addConfetti({ emojis });
+                        }, index * 250);
+                    });
+
+                    // Update localStorage and state
+                    if (selectedTable) {
+                        setCompletedStats(prevStats => {
+                            const newStats = { ...prevStats };
+                            newStats[selectedTable] = (newStats[selectedTable] || 0) + 1;
+                            localStorage.setItem('timestables', JSON.stringify(newStats));
+                            return newStats;
+                        });
+                    }
+                }
+            }, [correctQuestions, selectedTable]);
 
             useEffect(() => {
                 if (selectedTable) {
@@ -178,16 +216,21 @@
                             React.createElement('p', { className: "text-gray-600" }, "Select a times table to practice")
                         ),
                         React.createElement('div', { className: "grid grid-cols-3 gap-4" },
-                            Array.from({ length: 11 }, (_, i) => i + 2).map(table =>
-                                React.createElement('button', {
+                            Array.from({ length: 11 }, (_, i) => i + 2).map(table => {
+                                const perfectCount = completedStats[table] || 0;
+                                const isCompleted = perfectCount > 0;
+                                const buttonClasses = `relative bg-white hover:bg-blue-50 border-2 ${isCompleted ? 'border-green-400' : 'border-blue-200'} hover:border-blue-400 rounded-lg p-6 transition-all duration-200 shadow-sm hover:shadow-md`;
+                                
+                                return React.createElement('button', {
                                     key: table,
                                     onClick: () => handleTableSelect(table),
-                                    className: "bg-white hover:bg-blue-50 border-2 border-blue-200 hover:border-blue-400 rounded-lg p-6 transition-all duration-200 shadow-sm hover:shadow-md"
+                                    className: buttonClasses
                                 },
+                                    isCompleted && React.createElement('div', { className: "absolute top-1 right-2 text-lg text-green-500 font-semibold" }, `✓ ${perfectCount}`),
                                     React.createElement('div', { className: "text-2xl font-bold text-blue-600" }, table),
                                     React.createElement('div', { className: "text-sm text-gray-600 mt-1" }, "times table")
-                                )
-                            )
+                                );
+                            })
                         )
                     )
                 );
