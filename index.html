@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Times Tables Flash Cards</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <style>
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css');
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const TimesTablesFlashCards = () => {
+            const [selectedTable, setSelectedTable] = useState(null);
+            const [currentCard, setCurrentCard] = useState(0);
+            const [showAnswer, setShowAnswer] = useState(false);
+            const [cards, setCards] = useState([]);
+            const [userInput, setUserInput] = useState('');
+            const [inputState, setInputState] = useState('entering'); // 'entering', 'correct', 'incorrect'
+            const [recentResults, setRecentResults] = useState([]); // Track last 12 results
+            const [correctQuestions, setCorrectQuestions] = useState(new Set()); // Track which unique questions answered correctly
+            const [skippedCurrent, setSkippedCurrent] = useState(false);
+
+            // Generate shuffled deck with one orientation, display orientation chosen randomly
+            const generateCards = (table) => {
+                const newCards = [];
+                for (let i = 1; i <= 12; i++) {
+                    // Decide orientation once when creating the card
+                    const useNormalOrder = Math.random() > 0.5;
+                    newCards.push({
+                        table: table,
+                        factor: i,
+                        answer: table * i,
+                        question: useNormalOrder ? `${table} × ${i}` : `${i} × ${table}`
+                    });
+                }
+                // Shuffle the deck
+                return newCards.sort(() => Math.random() - 0.5);
+            };
+
+            useEffect(() => {
+                if (selectedTable) {
+                    const newCards = generateCards(selectedTable);
+                    setCards(newCards);
+                    setCurrentCard(0);
+                    resetCardState();
+                }
+            }, [selectedTable]);
+
+            const resetCardState = () => {
+                setShowAnswer(false);
+                setUserInput('');
+                setInputState('entering');
+                setSkippedCurrent(false);
+            };
+
+            const handleTableSelect = (table) => {
+                setSelectedTable(table);
+                setRecentResults([]);
+                setCorrectQuestions(new Set());
+            };
+
+            const handleNumberInput = (num) => {
+                if (inputState !== 'entering') return;
+                
+                const newInput = userInput + num;
+                const correctAnswer = String(cards[currentCard].answer);
+                
+                // Check if the input so far matches the beginning of the correct answer
+                if (correctAnswer.startsWith(newInput)) {
+                    setUserInput(newInput);
+                    
+                    // If complete and correct
+                    if (newInput === correctAnswer) {
+                        setInputState('correct');
+                        setShowAnswer(true);
+                        // Auto-click correct after 1 second
+                        setTimeout(() => {
+                            handleCorrect();
+                        }, 1000);
+                    }
+                } else {
+                    // Wrong digit entered - update userInput to show what they actually typed, then show answer
+                    setUserInput(newInput);
+                    setInputState('incorrect');
+                    setShowAnswer(true);
+                }
+            };
+
+            const handleShowMe = () => {
+                setShowAnswer(true);
+                setSkippedCurrent(true);
+            };
+
+            const handleCorrect = () => {
+                if (!skippedCurrent) {
+                    addResult('correct');
+                    // Add this unique question to the set of correctly answered questions
+                    const questionKey = `${cards[currentCard].table}x${cards[currentCard].factor}`;
+                    setCorrectQuestions(prev => new Set([...prev, questionKey]));
+                }
+                nextCard();
+            };
+
+            const handleIncorrect = () => {
+                addResult('incorrect');
+                nextCard();
+            };
+
+            const addResult = (result) => {
+                setRecentResults(prev => {
+                    const newResults = [...prev, result];
+                    return newResults.slice(-12); // Keep only last 12
+                });
+            };
+
+            const nextCard = () => {
+                // Generate new card set when we've gone through all cards
+                if (currentCard >= cards.length - 1) {
+                    const newCards = generateCards(selectedTable);
+                    setCards(newCards);
+                    setCurrentCard(0);
+                } else {
+                    setCurrentCard(currentCard + 1);
+                }
+                resetCardState();
+            };
+
+            const goBack = () => {
+                setSelectedTable(null);
+                setRecentResults([]);
+                setCorrectQuestions(new Set());
+            };
+
+            // Calculate gauge status
+            const getGaugeStatus = () => {
+                const correctCount = correctQuestions.size;
+                const gaugePercentage = correctCount / 12; // Always out of 12
+                
+                if (correctCount === 0) {
+                    return { text: 'starting out', show: true, percentage: 0, color: 'text-gray-600', score: `${correctCount}/12` };
+                } else if (correctCount === 12) {
+                    return { text: 'perfect!', show: true, percentage: gaugePercentage, color: 'text-yellow-600', score: `${correctCount}/12` };
+                } else if (correctCount >= 10) {
+                    return { text: 'keep going', show: true, percentage: gaugePercentage, color: 'text-blue-600', score: `${correctCount}/12` };
+                } else {
+                    return { text: 'getting there', show: true, percentage: gaugePercentage, color: 'text-orange-600', score: `${correctCount}/12` };
+                }
+            };
+
+            // Main menu - table selection
+            if (!selectedTable) {
+                return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" },
+                    React.createElement('div', { className: "max-w-2xl mx-auto" },
+                        React.createElement('div', { className: "text-center mb-8" },
+                            React.createElement('h1', { className: "text-4xl font-bold text-gray-800 mb-2" }, "Times Tables Flash Cards"),
+                            React.createElement('p', { className: "text-gray-600" }, "Select a times table to practice")
+                        ),
+                        React.createElement('div', { className: "grid grid-cols-3 gap-4" },
+                            Array.from({ length: 11 }, (_, i) => i + 2).map(table =>
+                                React.createElement('button', {
+                                    key: table,
+                                    onClick: () => handleTableSelect(table),
+                                    className: "bg-white hover:bg-blue-50 border-2 border-blue-200 hover:border-blue-400 rounded-lg p-6 transition-all duration-200 shadow-sm hover:shadow-md"
+                                },
+                                    React.createElement('div', { className: "text-2xl font-bold text-blue-600" }, table),
+                                    React.createElement('div', { className: "text-sm text-gray-600 mt-1" }, "times table")
+                                )
+                            )
+                        )
+                    )
+                );
+            }
+
+            // Learning session
+            const currentCardData = cards[currentCard];
+            if (!currentCardData) return null;
+
+            const gaugeStatus = getGaugeStatus();
+
+            return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" },
+                React.createElement('div', { className: "max-w-lg mx-auto" },
+                    // Header
+                    React.createElement('div', { className: "flex justify-between items-center mb-6" },
+                        React.createElement('button', {
+                            onClick: goBack,
+                            className: "px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700 transition-colors"
+                        }, "← Back"),
+                        React.createElement('div', { className: "text-center" },
+                            React.createElement('div', { className: "text-lg font-semibold text-gray-800" }, `${selectedTable} Times Table`),
+                            React.createElement('div', { className: "text-sm text-gray-600" }, "Keep practicing!")
+                        ),
+                        React.createElement('div', { className: "w-16" }) // Spacer
+                    ),
+
+                    // Performance Gauge
+                    gaugeStatus.show && React.createElement('div', { className: "mb-6 bg-white rounded-lg p-4 shadow-sm" },
+                        React.createElement('div', { className: "flex items-center justify-between mb-2" },
+                            React.createElement('div', { className: "text-sm font-semibold text-gray-700" }, gaugeStatus.score),
+                            React.createElement('div', { className: `text-lg font-semibold ${gaugeStatus.color}` }, gaugeStatus.text)
+                        ),
+                        React.createElement('div', { className: "w-full bg-gray-200 rounded-full h-3" },
+                            React.createElement('div', {
+                                className: "bg-gradient-to-r from-blue-400 to-green-400 h-3 rounded-full transition-all duration-500",
+                                style: { width: `${(gaugeStatus.percentage * 100)}%` }
+                            })
+                        )
+                    ),
+
+                    // Flash card
+                    React.createElement('div', { className: "bg-white rounded-xl shadow-lg p-8 text-center min-h-[400px] flex flex-col justify-center" },
+                        React.createElement('div', { className: "text-6xl font-bold text-gray-800 mb-6" }, currentCardData.question),
+                        
+                        !showAnswer ? 
+                            // Input interface
+                            React.createElement('div', null,
+                                React.createElement('div', { className: "mb-4" },
+                                    React.createElement('div', { className: "text-6xl font-bold text-green-600 mb-4 min-h-[4rem] flex items-center justify-center" },
+                                        `= ${userInput || '_'}`
+                                    ),
+                                    
+                                    // Number pad
+                                    React.createElement('div', { className: "flex justify-center mb-4" },
+                                        React.createElement('div', { className: "grid grid-cols-3 gap-3" },
+                                            [1,2,3,4,5,6,7,8,9].map(num =>
+                                                React.createElement('button', {
+                                                    key: num,
+                                                    onClick: () => handleNumberInput(String(num)),
+                                                    className: "w-24 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-2xl transition-colors",
+                                                    disabled: inputState !== 'entering'
+                                                }, num)
+                                            ),
+                                            React.createElement('div'), // Empty space
+                                            React.createElement('button', {
+                                                onClick: () => handleNumberInput('0'),
+                                                className: "w-24 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-2xl transition-colors",
+                                                disabled: inputState !== 'entering'
+                                            }, '0'),
+                                            React.createElement('div') // Empty space
+                                        )
+                                    )
+                                ),
+                                
+                                React.createElement('button', {
+                                    onClick: handleShowMe,
+                                    className: "px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-semibold transition-colors"
+                                }, "Show Me")
+                            ) :
+                            // Answer interface
+                            React.createElement('div', null,
+                                React.createElement('div', { className: "text-8xl font-bold text-green-600 mb-8" },
+                                    `= ${currentCardData.answer}`
+                                ),
+                                
+                                React.createElement('div', { className: "space-x-4" },
+                                    inputState === 'correct' && React.createElement('div', {
+                                        className: "px-6 py-3 bg-green-500 text-white rounded-lg font-semibold inline-block"
+                                    }, "✓ Correct"),
+                                    
+                                    inputState === 'incorrect' && React.createElement('div', { className: "flex flex-col items-center" },
+                                        React.createElement('button', {
+                                            onClick: handleIncorrect,
+                                            className: "px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors mb-2"
+                                        }, "✗ Incorrect"),
+                                        userInput && React.createElement('div', { className: "text-xl text-red-500" },
+                                            `you said: ${userInput}`
+                                        )
+                                    ),
+                                    
+                                    skippedCurrent && React.createElement('button', {
+                                        onClick: nextCard,
+                                        className: "px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors"
+                                    }, "Continue")
+                                )
+                            )
+                    )
+                )
+            );
+        };
+
+        ReactDOM.render(React.createElement(TimesTablesFlashCards), document.getElementById('root'));
+    </script>
+</body>
+</html>
