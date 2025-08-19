@@ -17,6 +17,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        const lskey = "timestables-flashcards";
         const { useState, useEffect, useRef } = React;
 
         const TimesTablesFlashCards = () => {
@@ -64,7 +65,7 @@
 
             useEffect(() => {
                 jsConfettiRef.current = new JSConfetti();
-                const storedCompleted = JSON.parse(localStorage.getItem('timestables') || '{}');
+                const storedCompleted = JSON.parse(localStorage.getItem(lskey) || '{}');
                 setCompletedStats(storedCompleted);
             }, []);
 
@@ -90,7 +91,7 @@
                         setCompletedStats(prevStats => {
                             const newStats = { ...prevStats };
                             newStats[selectedTable] = (newStats[selectedTable] || 0) + 1;
-                            localStorage.setItem('timestables', JSON.stringify(newStats));
+                            localStorage.setItem(lskey, JSON.stringify(newStats));
                             return newStats;
                         });
                     }
@@ -273,70 +274,78 @@
 
                     // Flash card
                     React.createElement('div', { className: "bg-white rounded-xl shadow-lg p-8 text-center min-h-[400px] flex flex-col justify-center" },
-                        React.createElement('div', { className: "text-6xl font-bold text-gray-800 mb-6" }, currentCardData.question),
-                        
-                        !showAnswer ? 
-                            // Input interface
-                            React.createElement('div', null,
-                                React.createElement('div', { className: "mb-4" },
-                                    React.createElement('div', { className: "text-6xl font-bold text-green-600 mb-4 min-h-[4rem] flex items-center justify-center" },
-                                        `= ${userInput || '_'}`
-                                    ),
-                                    
-                                    // Number pad
-                                    React.createElement('div', { className: "flex justify-center mb-4" },
-                                        React.createElement('div', { className: "grid grid-cols-3 gap-3" },
-                                            [1,2,3,4,5,6,7,8,9].map(num =>
+                        gaugeStatus.text === 'perfect!' ?
+                            React.createElement('button', {
+                                onClick: goBack,
+                                className: "px-12 py-6 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold text-4xl transition-colors"
+                            }, "Yay!")
+                        :
+                        React.createElement(React.Fragment, null,
+                            React.createElement('div', { className: "text-6xl font-bold text-gray-800 mb-6" }, currentCardData.question),
+                            
+                            !showAnswer ? 
+                                // Input interface
+                                React.createElement('div', null,
+                                    React.createElement('div', { className: "mb-4" },
+                                        React.createElement('div', { className: "text-6xl font-bold text-green-600 mb-4 min-h-[4rem] flex items-center justify-center" },
+                                            `= ${userInput || '_'}`
+                                        ),
+                                        
+                                        // Number pad
+                                        React.createElement('div', { className: "flex justify-center mb-4" },
+                                            React.createElement('div', { className: "grid grid-cols-3 gap-3" },
+                                                [1,2,3,4,5,6,7,8,9].map(num =>
+                                                    React.createElement('button', {
+                                                        key: num,
+                                                        onClick: () => handleNumberInput(String(num)),
+                                                        className: "w-24 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-2xl transition-colors",
+                                                        disabled: inputState !== 'entering'
+                                                    }, num)
+                                                ),
+                                                React.createElement('div'), // Empty space
                                                 React.createElement('button', {
-                                                    key: num,
-                                                    onClick: () => handleNumberInput(String(num)),
+                                                    onClick: () => handleNumberInput('0'),
                                                     className: "w-24 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-2xl transition-colors",
                                                     disabled: inputState !== 'entering'
-                                                }, num)
-                                            ),
-                                            React.createElement('div'), // Empty space
-                                            React.createElement('button', {
-                                                onClick: () => handleNumberInput('0'),
-                                                className: "w-24 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-2xl transition-colors",
-                                                disabled: inputState !== 'entering'
-                                            }, '0'),
-                                            React.createElement('div') // Empty space
-                                        )
-                                    )
-                                ),
-                                
-                                React.createElement('button', {
-                                    onClick: handleShowMe,
-                                    className: "px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-semibold transition-colors"
-                                }, "Show Me")
-                            ) :
-                            // Answer interface
-                            React.createElement('div', null,
-                                React.createElement('div', { className: "text-8xl font-bold text-green-600 mb-8" },
-                                    `= ${currentCardData.answer}`
-                                ),
-                                
-                                React.createElement('div', { className: "space-x-4" },
-                                    inputState === 'correct' && React.createElement('div', {
-                                        className: "px-6 py-3 bg-green-500 text-white rounded-lg font-semibold inline-block"
-                                    }, "✓ Correct"),
-                                    
-                                    inputState === 'incorrect' && React.createElement('div', { className: "flex flex-col items-center" },
-                                        React.createElement('button', {
-                                            onClick: handleIncorrect,
-                                            className: "px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors mb-2"
-                                        }, "✗ Incorrect"),
-                                        userInput && React.createElement('div', { className: "text-xl text-red-500" },
-                                            `you said: ${userInput}`
+                                                }, '0'),
+                                                React.createElement('div') // Empty space
+                                            )
                                         )
                                     ),
                                     
-                                    skippedCurrent && React.createElement('button', {
-                                        onClick: nextCard,
-                                        className: "px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors"
-                                    }, "Continue")
+                                    React.createElement('button', {
+                                        onClick: handleShowMe,
+                                        className: "px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-semibold transition-colors"
+                                    }, "Show Me")
+                                ) :
+                                // Answer interface
+                                React.createElement('div', null,
+                                    React.createElement('div', { className: "text-8xl font-bold text-green-600 mb-8" },
+                                        `= ${currentCardData.answer}`
+                                    ),
+                                    
+                                    React.createElement('div', { className: "space-x-4" },
+                                        inputState === 'correct' && React.createElement('div', {
+                                            className: "px-6 py-3 bg-green-500 text-white rounded-lg font-semibold inline-block"
+                                        }, "✓ Correct"),
+                                        
+                                        inputState === 'incorrect' && React.createElement('div', { className: "flex flex-col items-center" },
+                                            React.createElement('button', {
+                                                onClick: handleIncorrect,
+                                                className: "px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors mb-2"
+                                            }, "✗ Incorrect"),
+                                            userInput && React.createElement('div', { className: "text-xl text-red-500" },
+                                                `you said: ${userInput}`
+                                            )
+                                        ),
+                                        
+                                        skippedCurrent && React.createElement('button', {
+                                            onClick: nextCard,
+                                            className: "px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors"
+                                        }, "Continue")
+                                    )
                                 )
-                            )
+                        )
                     )
                 )
             );
