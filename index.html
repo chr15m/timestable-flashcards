@@ -94,7 +94,6 @@
         }
         .learning-session .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
@@ -110,18 +109,6 @@
         }
         .back-button:hover {
             background-color: #d1d5db;
-        }
-        .session-title-container {
-            text-align: center;
-        }
-        .session-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1f2937;
-        }
-        .session-subtitle {
-            font-size: 0.875rem;
-            color: #4b5563;
         }
         
         /* Gauge */
@@ -554,12 +541,7 @@
                         React.createElement('button', {
                             onClick: goBack,
                             className: "back-button"
-                        }, "← Back"),
-                        React.createElement('div', { className: "session-title-container" },
-                            React.createElement('div', { className: "session-title" }, `${selectedTable} Times Table`),
-                            React.createElement('div', { className: "session-subtitle" }, "Keep practicing!")
-                        ),
-                        React.createElement('div', { style: { width: '4rem' } }) // Spacer
+                        }, "← Back")
                     ),
 
                     // Performance Gauge
