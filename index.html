@@ -282,6 +282,23 @@
                 font-size: 1.25rem;
             }
         }
+
+        @keyframes coin-shine {
+            0% {
+                transform: translateX(-100%) skewX(-15deg);
+            }
+            25% {
+                transform: translateX(300%) skewX(-15deg);
+            }
+            100% {
+                transform: translateX(300%) skewX(-15deg);
+            }
+        }
+        .shine-effect {
+            animation: coin-shine 4s ease-in-out infinite;
+            fill: rgba(255, 255, 255, 0.5);
+            filter: blur(2px);
+        }
     </style>
 </head>
 <body>
@@ -291,47 +308,90 @@
         const lskey = "timestables-flashcards";
         const { useState, useEffect, useRef } = React;
 
+        let coinSlotIdCounter = 0;
         const CoinSlot = ({ number, correctCount }) => {
+            const [uniqueId] = useState(() => coinSlotIdCounter++);
+
             if (correctCount >= 4) { // Gem
+                const clipPathId = `gem-clip-${uniqueId}`;
+                const gemPaths = [
+                    { fill: "#BDDDF4", d: "M13 3H7l-7 9h10z" },
+                    { fill: "#5DADEC", d: "M36 12l-7-9h-6l3 9z" },
+                    { fill: "#4289C1", d: "M26 12h10L18 33z" },
+                    { fill: "#8CCAF7", d: "M10 12H0l18 21zm3-9l-3 9h16l-3-9z" },
+                    { fill: "#5DADEC", d: "M18 33l-8-21h16z" }
+                ];
                 return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
-                    React.createElement('path', { fill: "#BDDDF4", d: "M13 3H7l-7 9h10z" }),
-                    React.createElement('path', { fill: "#5DADEC", d: "M36 12l-7-9h-6l3 9z" }),
-                    React.createElement('path', { fill: "#4289C1", d: "M26 12h10L18 33z" }),
-                    React.createElement('path', { fill: "#8CCAF7", d: "M10 12H0l18 21zm3-9l-3 9h16l-3-9z" }),
-                    React.createElement('path', { fill: "#5DADEC", d: "M18 33l-8-21h16z" })
+                    React.createElement('defs', null,
+                        React.createElement('clipPath', { id: clipPathId },
+                            gemPaths.map((p, i) => React.createElement('path', { key: i, d: p.d }))
+                        )
+                    ),
+                    React.createElement('g', { clipPath: `url(#${clipPathId})` },
+                        gemPaths.map((p, i) => React.createElement('path', { key: i, fill: p.fill, d: p.d })),
+                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect" })
+                    ),
+                    React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "white", fontSize: "14", fontWeight: "bold" }, number)
                 );
             }
             if (correctCount === 3) { // Gold coin
+                const clipPathId = `gold-coin-clip-${uniqueId}`;
                 return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
-                    React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#B17618" }),
-                    React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#FFCC4D" }),
-                    React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#FFE8B6" }),
-                    React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#FFAC33" }),
+                    React.createElement('defs', null,
+                        React.createElement('clipPath', { id: clipPathId },
+                            React.createElement('circle', { cx: "18", cy: "18", r: "17" })
+                        )
+                    ),
+                    React.createElement('g', { clipPath: `url(#${clipPathId})` },
+                        React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#B17618" }),
+                        React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#FFCC4D" }),
+                        React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#FFE8B6" }),
+                        React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#FFAC33" }),
+                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect" })
+                    ),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#5E3A00", fontSize: "14", fontWeight: "bold" }, number)
                 );
             }
             if (correctCount === 2) { // Silver coin
+                const clipPathId = `silver-coin-clip-${uniqueId}`;
                 return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
-                    React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#a1a1aa" }),
-                    React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#d4d4d8" }),
-                    React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#f4f4f5" }),
-                    React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#e4e4e7" }),
+                    React.createElement('defs', null,
+                        React.createElement('clipPath', { id: clipPathId },
+                            React.createElement('circle', { cx: "18", cy: "18", r: "17" })
+                        )
+                    ),
+                    React.createElement('g', { clipPath: `url(#${clipPathId})` },
+                        React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#a1a1aa" }),
+                        React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#d4d4d8" }),
+                        React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#f4f4f5" }),
+                        React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#e4e4e7" }),
+                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect" })
+                    ),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#3f3f46", fontSize: "14", fontWeight: "bold" }, number)
                 );
             }
             if (correctCount === 1) { // Copper coin
+                const clipPathId = `copper-coin-clip-${uniqueId}`;
                 return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
-                    React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#8C4A33" }),
-                    React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#B4684D" }),
-                    React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#E4B49C" }),
-                    React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#D89376" }),
+                    React.createElement('defs', null,
+                        React.createElement('clipPath', { id: clipPathId },
+                            React.createElement('circle', { cx: "18", cy: "18", r: "17" })
+                        )
+                    ),
+                    React.createElement('g', { clipPath: `url(#${clipPathId})` },
+                        React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#8C4A33" }),
+                        React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#B4684D" }),
+                        React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#E4B49C" }),
+                        React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#D89376" }),
+                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect" })
+                    ),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#4A2519", fontSize: "14", fontWeight: "bold" }, number)
                 );
             }
 
             // Incomplete circle SVG
             return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
-                React.createElement('circle', { cx: "18", cy: "18", r: "17", fill: "#e5e7eb" }),
+                React.createElement('circle', { cx: "18", cy: "18", r: "17", fill: "#ffffff" }),
                 React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#4b5563", fontSize: "14", fontWeight: "bold" }, number)
             );
         };
