@@ -92,18 +92,6 @@
             color: #FFFBEB;
         }
 
-        .table-button-silver {
-            background-color: #d4d4d8;
-            border-color: #a1a1aa;
-        }
-        .table-button-silver:hover {
-            background-color: #e4e4e7;
-            border-color: #a1a1aa;
-        }
-        .table-button-silver .table-number {
-            color: #3f3f46;
-        }
-
         .table-button-gold {
             background-color: #FFCC4D;
             border-color: #B17618;
@@ -371,7 +359,7 @@
         const CoinSlot = ({ number, correctCount, animationDelay }) => {
             const [uniqueId] = useState(() => coinSlotIdCounter++);
 
-            if (correctCount >= 4) { // Gem
+            if (correctCount >= 3) { // Gem
                 const clipPathId = `gem-clip-${uniqueId}`;
                 const gemPaths = [
                     { fill: "#BDDDF4", d: "M13 3H7l-7 9h10z" },
@@ -393,7 +381,7 @@
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "white", fontSize: "14", fontWeight: "bold" }, number)
                 );
             }
-            if (correctCount === 3) { // Gold coin
+            if (correctCount === 2) { // Gold coin
                 const clipPathId = `gold-coin-clip-${uniqueId}`;
                 return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
                     React.createElement('defs', null,
@@ -409,24 +397,6 @@
                         React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect", style: { animationDelay } })
                     ),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#5E3A00", fontSize: "14", fontWeight: "bold" }, number)
-                );
-            }
-            if (correctCount === 2) { // Silver coin
-                const clipPathId = `silver-coin-clip-${uniqueId}`;
-                return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
-                    React.createElement('defs', null,
-                        React.createElement('clipPath', { id: clipPathId },
-                            React.createElement('circle', { cx: "18", cy: "18", r: "17" })
-                        )
-                    ),
-                    React.createElement('g', { clipPath: `url(#${clipPathId})` },
-                        React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#a1a1aa" }),
-                        React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#d4d4d8" }),
-                        React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#f4f4f5" }),
-                        React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#e4e4e7" }),
-                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect", style: { animationDelay } })
-                    ),
-                    React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#3f3f46", fontSize: "14", fontWeight: "bold" }, number)
                 );
             }
             if (correctCount === 1) { // Copper coin
@@ -673,10 +643,8 @@
                                 if (perfectCount === 1) {
                                     buttonClass += ' table-button-copper';
                                 } else if (perfectCount === 2) {
-                                    buttonClass += ' table-button-silver';
-                                } else if (perfectCount === 3) {
                                     buttonClass += ' table-button-gold';
-                                } else if (perfectCount >= 4) {
+                                } else if (perfectCount >= 3) {
                                     buttonClass += ' table-button-gem';
                                 }
                                 
@@ -693,8 +661,7 @@
                         React.createElement('div', { style: { display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2rem' } },
                             React.createElement(CoinSlot, { number: '', correctCount: 1, animationDelay: '0s' }),
                             React.createElement(CoinSlot, { number: '', correctCount: 2, animationDelay: '0.25s' }),
-                            React.createElement(CoinSlot, { number: '', correctCount: 3, animationDelay: '0.5s' }),
-                            React.createElement(CoinSlot, { number: '', correctCount: 4, animationDelay: '0.75s' })
+                            React.createElement(CoinSlot, { number: '', correctCount: 3, animationDelay: '0.5s' })
                         )
                     )
                 );
