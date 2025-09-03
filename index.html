@@ -204,8 +204,18 @@
             border: none;
             cursor: pointer;
         }
-        .show-me-button:hover {
+        .show-me-button:hover:not(:disabled) {
             background-color: #6b7280;
+        }
+        .show-me-button:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
+        .show-me-button.active {
+            background-color: #3b82f6;
+        }
+        .show-me-button.active:hover:not(:disabled) {
+            background-color: #2563eb;
         }
 
         /* Answer Interface */
@@ -330,6 +340,7 @@
             const [correctQuestions, setCorrectQuestions] = useState(new Set()); // Track which unique questions answered correctly
             const [skippedCurrent, setSkippedCurrent] = useState(false);
             const [completedStats, setCompletedStats] = useState({});
+            const [showMeEnabled, setShowMeEnabled] = useState(false);
             const jsConfettiRef = useRef();
 
             // Generate shuffled deck with one orientation, display orientation chosen randomly
@@ -405,6 +416,17 @@
                     resetCardState();
                 }
             }, [selectedTable]);
+
+            useEffect(() => {
+                if (selectedTable) { // only run timer when in a session
+                    setShowMeEnabled(false);
+                    const timer = setTimeout(() => {
+                        setShowMeEnabled(true);
+                    }, 3000);
+
+                    return () => clearTimeout(timer);
+                }
+            }, [currentCard, selectedTable]);
 
             const resetCardState = () => {
                 setShowAnswer(false);
@@ -571,7 +593,8 @@
                                     
                                     React.createElement('button', {
                                         onClick: handleShowMe,
-                                        className: "show-me-button"
+                                        className: `show-me-button ${showMeEnabled ? 'active' : ''}`,
+                                        disabled: !showMeEnabled
                                     }, "Show Me")
                                 ) :
                                 // Answer interface
