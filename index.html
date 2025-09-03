@@ -149,21 +149,22 @@
         .yay-button:hover {
             background-color: #16a34a;
         }
+        .question-answer-line {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
         .question {
             font-size: 3.75rem;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 1.5rem;
         }
         .user-input-display {
             font-size: 3.75rem;
             font-weight: 700;
             color: #16a34a;
-            margin-bottom: 1rem;
-            min-height: 4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .numpad-container {
             display: flex;
@@ -212,7 +213,6 @@
             font-size: 5rem;
             font-weight: 700;
             color: #16a34a;
-            margin-bottom: 2rem;
         }
         .answer-feedback {
             display: flex;
@@ -538,35 +538,34 @@
                             }, "Yay!")
                         :
                         React.createElement(React.Fragment, null,
-                            React.createElement('div', { className: "question" }, currentCardData.question),
-                            
                             !showAnswer ? 
                                 // Input interface
                                 React.createElement('div', null,
-                                    React.createElement('div', { style: { marginBottom: '1rem' } },
+                                    React.createElement('div', { className: "question-answer-line" },
+                                        React.createElement('div', { className: "question" }, currentCardData.question),
                                         React.createElement('div', { className: "user-input-display" },
                                             `= ${userInput || '_'}`
-                                        ),
-                                        
-                                        // Number pad
-                                        React.createElement('div', { className: "numpad-container" },
-                                            React.createElement('div', { className: "numpad-grid" },
-                                                [1,2,3,4,5,6,7,8,9].map(num =>
-                                                    React.createElement('button', {
-                                                        key: num,
-                                                        onClick: () => handleNumberInput(String(num)),
-                                                        className: "num-button",
-                                                        disabled: inputState !== 'entering'
-                                                    }, num)
-                                                ),
-                                                React.createElement('div'), // Empty space
+                                        )
+                                    ),
+                                    
+                                    // Number pad
+                                    React.createElement('div', { className: "numpad-container" },
+                                        React.createElement('div', { className: "numpad-grid" },
+                                            [1,2,3,4,5,6,7,8,9].map(num =>
                                                 React.createElement('button', {
-                                                    onClick: () => handleNumberInput('0'),
+                                                    key: num,
+                                                    onClick: () => handleNumberInput(String(num)),
                                                     className: "num-button",
                                                     disabled: inputState !== 'entering'
-                                                }, '0'),
-                                                React.createElement('div') // Empty space
-                                            )
+                                                }, num)
+                                            ),
+                                            React.createElement('div'), // Empty space
+                                            React.createElement('button', {
+                                                onClick: () => handleNumberInput('0'),
+                                                className: "num-button",
+                                                disabled: inputState !== 'entering'
+                                            }, '0'),
+                                            React.createElement('div') // Empty space
                                         )
                                     ),
                                     
@@ -577,8 +576,11 @@
                                 ) :
                                 // Answer interface
                                 React.createElement('div', null,
-                                    React.createElement('div', { className: "answer-display" },
-                                        `= ${currentCardData.answer}`
+                                    React.createElement('div', { className: "question-answer-line" },
+                                        React.createElement('div', { className: "question" }, currentCardData.question),
+                                        React.createElement('div', { className: "answer-display" },
+                                            `= ${currentCardData.answer}`
+                                        )
                                     ),
                                     
                                     React.createElement('div', { className: "answer-feedback" },
