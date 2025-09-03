@@ -436,11 +436,14 @@
                     newCards = [];
                     for (let i = 1; i <= 12; i++) {
                         const questionKey = `${table}x${i}`;
-                        const alreadyCorrect = correctQuestions[questionKey] > 0;
+                        const correctCount = correctQuestions[questionKey] || 0;
 
-                        // For questions answered correctly, only include them with 50% probability.
-                        if (alreadyCorrect && Math.random() < 0.5) {
-                            continue;
+                        if (correctCount > 0) {
+                            // Halve the probability of showing the card for each time it has been answered correctly.
+                            const probabilityOfBeingShown = Math.pow(0.5, correctCount);
+                            if (Math.random() > probabilityOfBeingShown) {
+                                continue;
+                            }
                         }
 
                         // Decide orientation once when creating the card
