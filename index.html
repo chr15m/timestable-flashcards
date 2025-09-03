@@ -88,9 +88,8 @@
             background-color: #c4795d;
             border-color: #8C4A33;
         }
-        .table-button-copper .table-number,
-        .table-button-copper .table-label {
-            color: #4A2519;
+        .table-button-copper .table-number {
+            color: #FFFBEB;
         }
 
         .table-button-silver {
@@ -101,8 +100,7 @@
             background-color: #e4e4e7;
             border-color: #a1a1aa;
         }
-        .table-button-silver .table-number,
-        .table-button-silver .table-label {
+        .table-button-silver .table-number {
             color: #3f3f46;
         }
 
@@ -114,8 +112,7 @@
             background-color: #ffd56b;
             border-color: #B17618;
         }
-        .table-button-gold .table-number,
-        .table-button-gold .table-label {
+        .table-button-gold .table-number {
             color: #5E3A00;
         }
 
@@ -127,19 +124,13 @@
             background-color: #cde7f8;
             border-color: #5DADEC;
         }
-        .table-button-gem .table-number,
-        .table-button-gem .table-label {
+        .table-button-gem .table-number {
             color: #1E3A8A;
         }
         .table-number {
-            font-size: 1.5rem;
+            font-size: 2.5rem;
             font-weight: 700;
             color: #2563eb;
-        }
-        .table-label {
-            font-size: 0.875rem;
-            color: #4b5563;
-            margin-top: 0.25rem;
         }
 
         /* Learning Session */
@@ -695,8 +686,7 @@
                                     className: buttonClass,
                                     style: shineStyle
                                 },
-                                    React.createElement('div', { className: "table-number" }, table),
-                                    React.createElement('div', { className: "table-label" }, "times table")
+                                    React.createElement('div', { className: "table-number" }, table)
                                 );
                             })
                         )
