@@ -64,16 +64,72 @@
             border-color: #60a5fa;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .table-button.completed {
-            border-color: #4ade80;
+        .table-button.shining {
+            overflow: hidden;
         }
-        .perfect-count {
+        .table-button.shining::before {
+            content: '';
             position: absolute;
-            top: 0.25rem;
-            right: 0.5rem;
-            font-size: 1.125rem;
-            color: #22c55e;
-            font-weight: 600;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            filter: blur(10px);
+            transform: skewX(-15deg);
+            animation: table-shine 4s ease-in-out infinite;
+            animation-delay: var(--shine-delay, 0s);
+        }
+
+        .table-button-copper {
+            background-color: #B4684D;
+            border-color: #8C4A33;
+        }
+        .table-button-copper:hover {
+            background-color: #c4795d;
+            border-color: #8C4A33;
+        }
+        .table-button-copper .table-number,
+        .table-button-copper .table-label {
+            color: #4A2519;
+        }
+
+        .table-button-silver {
+            background-color: #d4d4d8;
+            border-color: #a1a1aa;
+        }
+        .table-button-silver:hover {
+            background-color: #e4e4e7;
+            border-color: #a1a1aa;
+        }
+        .table-button-silver .table-number,
+        .table-button-silver .table-label {
+            color: #3f3f46;
+        }
+
+        .table-button-gold {
+            background-color: #FFCC4D;
+            border-color: #B17618;
+        }
+        .table-button-gold:hover {
+            background-color: #ffd56b;
+            border-color: #B17618;
+        }
+        .table-button-gold .table-number,
+        .table-button-gold .table-label {
+            color: #5E3A00;
+        }
+
+        .table-button-gem {
+            background-color: #BDDDF4;
+            border-color: #5DADEC;
+        }
+        .table-button-gem:hover {
+            background-color: #cde7f8;
+            border-color: #5DADEC;
+        }
+        .table-button-gem .table-number,
+        .table-button-gem .table-label {
+            color: #1E3A8A;
         }
         .table-number {
             font-size: 1.5rem;
@@ -292,6 +348,18 @@
             }
             100% {
                 transform: translateX(300%) skewX(-15deg);
+            }
+        }
+
+        @keyframes table-shine {
+            0% {
+                left: -100%;
+            }
+            25% {
+                left: 150%;
+            }
+            100% {
+                left: 150%;
             }
         }
         .shine-effect {
@@ -603,15 +671,30 @@
                         React.createElement('div', { className: "tables-grid" },
                             Array.from({ length: 11 }, (_, i) => i + 2).map(table => {
                                 const perfectCount = completedStats[table] || 0;
-                                const isCompleted = perfectCount > 0;
-                                const buttonClasses = `table-button ${isCompleted ? 'completed' : ''}`;
+                                let buttonClass = 'table-button';
+                                let shineStyle = {};
+
+                                if (perfectCount > 0) {
+                                    buttonClass += ' shining';
+                                    shineStyle = { '--shine-delay': `${Math.random() * -4}s` };
+                                }
+
+                                if (perfectCount === 1) {
+                                    buttonClass += ' table-button-copper';
+                                } else if (perfectCount === 2) {
+                                    buttonClass += ' table-button-silver';
+                                } else if (perfectCount === 3) {
+                                    buttonClass += ' table-button-gold';
+                                } else if (perfectCount >= 4) {
+                                    buttonClass += ' table-button-gem';
+                                }
                                 
                                 return React.createElement('button', {
                                     key: table,
                                     onClick: () => handleTableSelect(table),
-                                    className: buttonClasses
+                                    className: buttonClass,
+                                    style: shineStyle
                                 },
-                                    isCompleted && React.createElement('div', { className: "perfect-count" }, `✓ ${perfectCount}`),
                                     React.createElement('div', { className: "table-number" }, table),
                                     React.createElement('div', { className: "table-label" }, "times table")
                                 );
