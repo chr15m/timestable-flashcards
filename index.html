@@ -7,10 +7,314 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <style>
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css');
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        button {
+            font-family: inherit;
+        }
+        .container {
+            min-height: 100vh;
+            background-image: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
+            padding: 1.5rem;
+            box-sizing: border-box;
+        }
+        .main-menu {
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 0.5rem;
+        }
+        .subtitle {
+            color: #4b5563;
+            margin: 0;
+        }
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .table-button {
+            position: relative;
+            background-color: white;
+            border: 2px solid #bfdbfe;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            text-align: center;
+        }
+        .table-button:hover {
+            background-color: #eff6ff;
+            border-color: #60a5fa;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .table-button.completed {
+            border-color: #4ade80;
+        }
+        .perfect-count {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.5rem;
+            font-size: 1.125rem;
+            color: #22c55e;
+            font-weight: 600;
+        }
+        .table-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+        .table-label {
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin-top: 0.25rem;
+        }
+
+        /* Learning Session */
+        .learning-session {
+            max-width: 32rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .learning-session .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .back-button {
+            padding: 0.5rem 1rem;
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            color: #374151;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .back-button:hover {
+            background-color: #d1d5db;
+        }
+        .session-title-container {
+            text-align: center;
+        }
+        .session-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .session-subtitle {
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+        
+        /* Gauge */
+        .gauge-container {
+            margin-bottom: 1.5rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .gauge-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .gauge-score {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .gauge-text {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .color-gray { color: #4b5563; }
+        .color-yellow { color: #ca8a04; }
+        .color-blue { color: #2563eb; }
+        .color-orange { color: #ea580c; }
+
+        .gauge-bar-background {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 0.75rem;
+        }
+        .gauge-bar-foreground {
+            background-image: linear-gradient(to right, #60a5fa, #4ade80);
+            height: 0.75rem;
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Flash Card */
+        .flash-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            text-align: center;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .yay-button {
+            padding: 1.5rem 3rem;
+            background-color: #22c55e;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 2.25rem;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .yay-button:hover {
+            background-color: #16a34a;
+        }
+        .question {
+            font-size: 3.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+        }
+        .user-input-display {
+            font-size: 3.75rem;
+            font-weight: 700;
+            color: #16a34a;
+            margin-bottom: 1rem;
+            min-height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .numpad-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .numpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+        .num-button {
+            width: 6rem;
+            height: 6rem;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1.5rem;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .num-button:hover:not(:disabled) {
+            background-color: #e5e7eb;
+        }
+        .num-button:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
+        .show-me-button {
+            padding: 0.5rem 1.5rem;
+            background-color: #9ca3af;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .show-me-button:hover {
+            background-color: #6b7280;
+        }
+
+        /* Answer Interface */
+        .answer-display {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #16a34a;
+            margin-bottom: 2rem;
+        }
+        .answer-feedback {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .feedback-correct {
+            padding: 0.75rem 1.5rem;
+            background-color: #22c55e;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .incorrect-feedback-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .feedback-incorrect-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            margin-bottom: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+        .feedback-incorrect-button:hover {
+            background-color: #dc2626;
+        }
+        .your-answer {
+            font-size: 1.25rem;
+            color: #ef4444;
+        }
+        .continue-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .continue-button:hover {
+            background-color: #2563eb;
+        }
+
+        @media (max-width: 400px), (max-height: 750px) {
+            .num-button {
+                width: 4.5rem;
+                height: 4.5rem;
+                font-size: 1.25rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -198,38 +502,38 @@
                 const gaugePercentage = correctCount / 12; // Always out of 12
                 
                 if (correctCount === 0) {
-                    return { text: 'starting out', show: true, percentage: 0, color: 'text-gray-600', score: `${correctCount}/12` };
+                    return { text: 'starting out', show: true, percentage: 0, color: 'color-gray', score: `${correctCount}/12` };
                 } else if (correctCount === 12) {
-                    return { text: 'perfect!', show: true, percentage: gaugePercentage, color: 'text-yellow-600', score: `${correctCount}/12` };
+                    return { text: 'perfect!', show: true, percentage: gaugePercentage, color: 'color-yellow', score: `${correctCount}/12` };
                 } else if (correctCount >= 10) {
-                    return { text: 'keep going', show: true, percentage: gaugePercentage, color: 'text-blue-600', score: `${correctCount}/12` };
+                    return { text: 'keep going', show: true, percentage: gaugePercentage, color: 'color-blue', score: `${correctCount}/12` };
                 } else {
-                    return { text: 'getting there', show: true, percentage: gaugePercentage, color: 'text-orange-600', score: `${correctCount}/12` };
+                    return { text: 'getting there', show: true, percentage: gaugePercentage, color: 'color-orange', score: `${correctCount}/12` };
                 }
             };
 
             // Main menu - table selection
             if (!selectedTable) {
-                return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" },
-                    React.createElement('div', { className: "max-w-2xl mx-auto" },
-                        React.createElement('div', { className: "text-center mb-8" },
-                            React.createElement('h1', { className: "text-4xl font-bold text-gray-800 mb-2" }, "Times Tables Flash Cards"),
-                            React.createElement('p', { className: "text-gray-600" }, "Select a times table to practice")
+                return React.createElement('div', { className: "container" },
+                    React.createElement('div', { className: "main-menu" },
+                        React.createElement('div', { className: "header" },
+                            React.createElement('h1', { className: "title" }, "Times Tables Flash Cards"),
+                            React.createElement('p', { className: "subtitle" }, "Select a times table to practice")
                         ),
-                        React.createElement('div', { className: "grid grid-cols-3 gap-4" },
+                        React.createElement('div', { className: "tables-grid" },
                             Array.from({ length: 11 }, (_, i) => i + 2).map(table => {
                                 const perfectCount = completedStats[table] || 0;
                                 const isCompleted = perfectCount > 0;
-                                const buttonClasses = `relative bg-white hover:bg-blue-50 border-2 ${isCompleted ? 'border-green-400' : 'border-blue-200'} hover:border-blue-400 rounded-lg p-6 transition-all duration-200 shadow-sm hover:shadow-md`;
+                                const buttonClasses = `table-button ${isCompleted ? 'completed' : ''}`;
                                 
                                 return React.createElement('button', {
                                     key: table,
                                     onClick: () => handleTableSelect(table),
                                     className: buttonClasses
                                 },
-                                    isCompleted && React.createElement('div', { className: "absolute top-1 right-2 text-lg text-green-500 font-semibold" }, `✓ ${perfectCount}`),
-                                    React.createElement('div', { className: "text-2xl font-bold text-blue-600" }, table),
-                                    React.createElement('div', { className: "text-sm text-gray-600 mt-1" }, "times table")
+                                    isCompleted && React.createElement('div', { className: "perfect-count" }, `✓ ${perfectCount}`),
+                                    React.createElement('div', { className: "table-number" }, table),
+                                    React.createElement('div', { className: "table-label" }, "times table")
                                 );
                             })
                         )
@@ -243,69 +547,69 @@
 
             const gaugeStatus = getGaugeStatus();
 
-            return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" },
-                React.createElement('div', { className: "max-w-lg mx-auto" },
+            return React.createElement('div', { className: "container" },
+                React.createElement('div', { className: "learning-session" },
                     // Header
-                    React.createElement('div', { className: "flex justify-between items-center mb-6" },
+                    React.createElement('div', { className: "header" },
                         React.createElement('button', {
                             onClick: goBack,
-                            className: "px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700 transition-colors"
+                            className: "back-button"
                         }, "← Back"),
-                        React.createElement('div', { className: "text-center" },
-                            React.createElement('div', { className: "text-lg font-semibold text-gray-800" }, `${selectedTable} Times Table`),
-                            React.createElement('div', { className: "text-sm text-gray-600" }, "Keep practicing!")
+                        React.createElement('div', { className: "session-title-container" },
+                            React.createElement('div', { className: "session-title" }, `${selectedTable} Times Table`),
+                            React.createElement('div', { className: "session-subtitle" }, "Keep practicing!")
                         ),
-                        React.createElement('div', { className: "w-16" }) // Spacer
+                        React.createElement('div', { style: { width: '4rem' } }) // Spacer
                     ),
 
                     // Performance Gauge
-                    gaugeStatus.show && React.createElement('div', { className: "mb-6 bg-white rounded-lg p-4 shadow-sm" },
-                        React.createElement('div', { className: "flex items-center justify-between mb-2" },
-                            React.createElement('div', { className: "text-sm font-semibold text-gray-700" }, gaugeStatus.score),
-                            React.createElement('div', { className: `text-lg font-semibold ${gaugeStatus.color}` }, gaugeStatus.text)
+                    gaugeStatus.show && React.createElement('div', { className: "gauge-container" },
+                        React.createElement('div', { className: "gauge-header" },
+                            React.createElement('div', { className: "gauge-score" }, gaugeStatus.score),
+                            React.createElement('div', { className: `gauge-text ${gaugeStatus.color}` }, gaugeStatus.text)
                         ),
-                        React.createElement('div', { className: "w-full bg-gray-200 rounded-full h-3" },
+                        React.createElement('div', { className: "gauge-bar-background" },
                             React.createElement('div', {
-                                className: "bg-gradient-to-r from-blue-400 to-green-400 h-3 rounded-full transition-all duration-500",
+                                className: "gauge-bar-foreground",
                                 style: { width: `${(gaugeStatus.percentage * 100)}%` }
                             })
                         )
                     ),
 
                     // Flash card
-                    React.createElement('div', { className: "bg-white rounded-xl shadow-lg p-8 text-center min-h-[400px] flex flex-col justify-center" },
+                    React.createElement('div', { className: "flash-card" },
                         gaugeStatus.text === 'perfect!' ?
                             React.createElement('button', {
                                 onClick: goBack,
-                                className: "px-12 py-6 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold text-4xl transition-colors"
+                                className: "yay-button"
                             }, "Yay!")
                         :
                         React.createElement(React.Fragment, null,
-                            React.createElement('div', { className: "text-6xl font-bold text-gray-800 mb-6" }, currentCardData.question),
+                            React.createElement('div', { className: "question" }, currentCardData.question),
                             
                             !showAnswer ? 
                                 // Input interface
                                 React.createElement('div', null,
-                                    React.createElement('div', { className: "mb-4" },
-                                        React.createElement('div', { className: "text-6xl font-bold text-green-600 mb-4 min-h-[4rem] flex items-center justify-center" },
+                                    React.createElement('div', { style: { marginBottom: '1rem' } },
+                                        React.createElement('div', { className: "user-input-display" },
                                             `= ${userInput || '_'}`
                                         ),
                                         
                                         // Number pad
-                                        React.createElement('div', { className: "flex justify-center mb-4" },
-                                            React.createElement('div', { className: "grid grid-cols-3 gap-3" },
+                                        React.createElement('div', { className: "numpad-container" },
+                                            React.createElement('div', { className: "numpad-grid" },
                                                 [1,2,3,4,5,6,7,8,9].map(num =>
                                                     React.createElement('button', {
                                                         key: num,
                                                         onClick: () => handleNumberInput(String(num)),
-                                                        className: "w-24 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-2xl transition-colors",
+                                                        className: "num-button",
                                                         disabled: inputState !== 'entering'
                                                     }, num)
                                                 ),
                                                 React.createElement('div'), // Empty space
                                                 React.createElement('button', {
                                                     onClick: () => handleNumberInput('0'),
-                                                    className: "w-24 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-2xl transition-colors",
+                                                    className: "num-button",
                                                     disabled: inputState !== 'entering'
                                                 }, '0'),
                                                 React.createElement('div') // Empty space
@@ -315,33 +619,33 @@
                                     
                                     React.createElement('button', {
                                         onClick: handleShowMe,
-                                        className: "px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-semibold transition-colors"
+                                        className: "show-me-button"
                                     }, "Show Me")
                                 ) :
                                 // Answer interface
                                 React.createElement('div', null,
-                                    React.createElement('div', { className: "text-8xl font-bold text-green-600 mb-8" },
+                                    React.createElement('div', { className: "answer-display" },
                                         `= ${currentCardData.answer}`
                                     ),
                                     
-                                    React.createElement('div', { className: "space-x-4" },
+                                    React.createElement('div', { className: "answer-feedback" },
                                         inputState === 'correct' && React.createElement('div', {
-                                            className: "px-6 py-3 bg-green-500 text-white rounded-lg font-semibold inline-block"
+                                            className: "feedback-correct"
                                         }, "✓ Correct"),
                                         
-                                        inputState === 'incorrect' && React.createElement('div', { className: "flex flex-col items-center" },
+                                        inputState === 'incorrect' && React.createElement('div', { className: "incorrect-feedback-container" },
                                             React.createElement('button', {
                                                 onClick: handleIncorrect,
-                                                className: "px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors mb-2"
+                                                className: "feedback-incorrect-button"
                                             }, "✗ Incorrect"),
-                                            userInput && React.createElement('div', { className: "text-xl text-red-500" },
+                                            userInput && React.createElement('div', { className: "your-answer" },
                                                 `you said: ${userInput}`
                                             )
                                         ),
                                         
                                         skippedCurrent && React.createElement('button', {
                                             onClick: nextCard,
-                                            className: "px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors"
+                                            className: "continue-button"
                                         }, "Continue")
                                     )
                                 )

@@ -1,4 +1,4 @@
-- [ ] Shrink number buttons so the whole UI fits on the screen on tablet and mobile
+- [x] Shrink number buttons so the whole UI fits on the screen on tablet and mobile
 - [ ] If the number keys are off the bottom of the screen, it scrolls up every time you input an answer and you have to scroll back down again.
 - [ ] Turn the background of the box pink background for incorrect numbers
 - [ ] Instead of the progress bar, add a list of circles ("slots") for each number. For each correct answer change the circle to a copper coin. When answered correctly gain change it to silver, then gold, then a diamond gem.
