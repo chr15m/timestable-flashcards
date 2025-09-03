@@ -1,4 +1,4 @@
-- [ ] For each correct answer change the circle to a copper coin. When answered correctly gain change it to silver, then gold, then a diamond gem.
+- [x] For each correct answer change the circle to a copper coin. When answered correctly gain change it to silver, then gold, then a diamond gem.
 - [ ] Each time a question is answered correctly, halve the probability it will be shown again. So a copper coin will have a 50% chance of being shown again. A silver, 25%, etc.
 - [ ] On the front page, instead of a tick for each timestable completed and a count, use coins for the number of completions. E.g. a copper coin for completed once, silver for completed twice, gold, diamond.
 - [ ] Make the app work entirely offline. Add an empty serviceworker, minimal manifest.json, and the right meta tags so it can be installed as a PWA.

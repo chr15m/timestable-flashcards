@@ -291,15 +291,41 @@
         const lskey = "timestables-flashcards";
         const { useState, useEffect, useRef } = React;
 
-        const CoinSlot = ({ number, isCorrect }) => {
-            if (isCorrect) {
-                // Copper coin SVG
+        const CoinSlot = ({ number, correctCount }) => {
+            if (correctCount >= 4) { // Gem
+                return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
+                    React.createElement('path', { fill: "#BDDDF4", d: "M13 3H7l-7 9h10z" }),
+                    React.createElement('path', { fill: "#5DADEC", d: "M36 12l-7-9h-6l3 9z" }),
+                    React.createElement('path', { fill: "#4289C1", d: "M26 12h10L18 33z" }),
+                    React.createElement('path', { fill: "#8CCAF7", d: "M10 12H0l18 21zm3-9l-3 9h16l-3-9z" }),
+                    React.createElement('path', { fill: "#5DADEC", d: "M18 33l-8-21h16z" })
+                );
+            }
+            if (correctCount === 3) { // Gold coin
                 return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
                     React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#F4900C" }),
                     React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#FFCC4D" }),
                     React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#FFE8B6" }),
                     React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#FFAC33" }),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#8C5B1A", fontSize: "14", fontWeight: "bold" }, number)
+                );
+            }
+            if (correctCount === 2) { // Silver coin
+                return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
+                    React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#a1a1aa" }),
+                    React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#d4d4d8" }),
+                    React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#f4f4f5" }),
+                    React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#e4e4e7" }),
+                    React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#3f3f46", fontSize: "14", fontWeight: "bold" }, number)
+                );
+            }
+            if (correctCount === 1) { // Copper coin
+                return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
+                    React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#b45309" }),
+                    React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#f59e0b" }),
+                    React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#fef3c7" }),
+                    React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#fcd34d" }),
+                    React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#78350f", fontSize: "14", fontWeight: "bold" }, number)
                 );
             }
 
@@ -337,7 +363,7 @@
             const [cards, setCards] = useState([]);
             const [userInput, setUserInput] = useState('');
             const [inputState, setInputState] = useState('entering'); // 'entering', 'correct', 'incorrect'
-            const [correctQuestions, setCorrectQuestions] = useState(new Set()); // Track which unique questions answered correctly
+            const [correctQuestions, setCorrectQuestions] = useState({}); // Track counts of correct answers for each question
             const [skippedCurrent, setSkippedCurrent] = useState(false);
             const [completedStats, setCompletedStats] = useState({});
             const [showMeEnabled, setShowMeEnabled] = useState(false);
@@ -350,7 +376,7 @@
                     newCards = [];
                     for (let i = 1; i <= 12; i++) {
                         const questionKey = `${table}x${i}`;
-                        const alreadyCorrect = correctQuestions.has(questionKey);
+                        const alreadyCorrect = correctQuestions[questionKey] > 0;
 
                         // For questions answered correctly, only include them with 50% probability.
                         if (alreadyCorrect && Math.random() < 0.5) {
@@ -380,7 +406,7 @@
             }, []);
 
             useEffect(() => {
-                if (correctQuestions.size === 12) {
+                if (Object.keys(correctQuestions).length === 12) {
                     // Confetti effect
                     const emojiSets = [
                         ['🌈', '⚡️', '💥', '✨', '💫', '🌸'],
@@ -437,7 +463,7 @@
 
             const handleTableSelect = (table) => {
                 setSelectedTable(table);
-                setCorrectQuestions(new Set());
+                setCorrectQuestions({});
             };
 
             const handleNumberInput = (num) => {
@@ -453,7 +479,11 @@
                     // If complete and correct
                     if (newInput === correctAnswer) {
                         const questionKey = `${cards[currentCard].table}x${cards[currentCard].factor}`;
-                        setCorrectQuestions(prev => new Set([...prev, questionKey]));
+                        setCorrectQuestions(prev => {
+                            const newCounts = { ...prev };
+                            newCounts[questionKey] = (newCounts[questionKey] || 0) + 1;
+                            return newCounts;
+                        });
                         setInputState('correct');
                         setShowAnswer(true);
                         // Auto-click correct after 1 second
@@ -496,7 +526,7 @@
 
             const goBack = () => {
                 setSelectedTable(null);
-                setCorrectQuestions(new Set());
+                setCorrectQuestions({});
             };
 
             // Main menu - table selection
@@ -524,6 +554,13 @@
                                 );
                             })
                         )
+                    ),
+                    React.createElement('div', { style: { display: 'flex', justifyContent: 'center', gap: '1rem', padding: '1rem' } },
+                        React.createElement(CoinSlot, { number: '0', correctCount: 0 }),
+                        React.createElement(CoinSlot, { number: '1', correctCount: 1 }),
+                        React.createElement(CoinSlot, { number: '2', correctCount: 2 }),
+                        React.createElement(CoinSlot, { number: '3', correctCount: 3 }),
+                        React.createElement(CoinSlot, { number: '4', correctCount: 4 })
                     )
                 );
             }
@@ -532,7 +569,7 @@
             const currentCardData = cards[currentCard];
             if (!currentCardData) return null;
 
-            const isPerfect = correctQuestions.size === 12;
+            const isPerfect = Object.keys(correctQuestions).length === 12;
 
             return React.createElement('div', { className: "container" },
                 React.createElement('div', { className: "learning-session" },
@@ -545,8 +582,8 @@
                         React.createElement('div', { className: 'slots-container' },
                             Array.from({ length: 12 }, (_, i) => i + 1).map(factor => {
                                 const questionKey = `${selectedTable}x${factor}`;
-                                const isCorrect = correctQuestions.has(questionKey);
-                                return React.createElement(CoinSlot, { key: factor, number: factor, isCorrect: isCorrect });
+                                const correctCount = correctQuestions[questionKey] || 0;
+                                return React.createElement(CoinSlot, { key: factor, number: factor, correctCount: correctCount });
                             })
                         )
                     ),
@@ -629,6 +666,13 @@
                                 )
                         )
                     )
+                ),
+                React.createElement('div', { style: { display: 'flex', justifyContent: 'center', gap: '1rem', padding: '1rem' } },
+                    React.createElement(CoinSlot, { number: '0', correctCount: 0 }),
+                    React.createElement(CoinSlot, { number: '1', correctCount: 1 }),
+                    React.createElement(CoinSlot, { number: '2', correctCount: 2 }),
+                    React.createElement(CoinSlot, { number: '3', correctCount: 3 }),
+                    React.createElement(CoinSlot, { number: '4', correctCount: 4 })
                 )
             );
         };
