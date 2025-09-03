@@ -1,4 +1,4 @@
-- [ ] Make the app work entirely offline. Add an empty serviceworker, minimal manifest.json, and the right meta tags so it can be installed as a PWA.
+- [x] Make the app work entirely offline. Add an empty serviceworker, minimal manifest.json, and the right meta tags so it can be installed as a PWA.
 - [ ] Add "juice" to all parts of the app (make a nested list of different places we can add juice)
   - [ ] Juice idea 1...
 
