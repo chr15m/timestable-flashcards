@@ -1,0 +1,10 @@
+- [ ] If the number keys are off the bottom of the screen, it scrolls up every time you input an answer and you have to scroll back down again.
+- [ ] Shrink number buttons so the whole UI fits on the screen on tablet and mobile
+- [ ] Turn the background of the box pink background for incorrect numbers
+- [ ] Instead of the progress bar, add a list of circles ("slots") for each number. For each correct answer change the circle to a copper coin. When answered correctly gain change it to silver, then gold, then a diamond gem.
+- [ ] Each time a question is answered correctly, halve the probability it will be shown again. So a copper coin will have a 50% chance of being shown again. A silver, 25%, etc.
+- [ ] Enable the "show me" button and make it blue after 3 seconds
+- [ ] On the front page, instead of a tick for each timestable completed and a count, use coins for the number of completions. E.g. a copper coin for completed once, silver for completed twice, gold, diamond.
+- [ ] Make the app work entirely offline. Add an empty serviceworker, minimal manifest.json, and the right meta tags so it can be installed as a PWA.
+- [ ] Add "juice" to all parts of the app (make a nested list of different places we can add juice)
+  - [ ] Juice idea 1...
