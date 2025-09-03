@@ -95,6 +95,7 @@
         .learning-session .header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 1.5rem;
         }
         .back-button {
@@ -111,45 +112,14 @@
             background-color: #d1d5db;
         }
         
-        /* Gauge */
-        .gauge-container {
-            margin-bottom: 1.5rem;
-            background-color: white;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-        .gauge-header {
+        .slots-container {
             display: flex;
+            gap: 0.25rem;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
         }
-        .gauge-score {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #374151;
-        }
-        .gauge-text {
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
-        .color-gray { color: #4b5563; }
-        .color-yellow { color: #ca8a04; }
-        .color-blue { color: #2563eb; }
-        .color-orange { color: #ea580c; }
-
-        .gauge-bar-background {
-            width: 100%;
-            background-color: #e5e7eb;
-            border-radius: 9999px;
-            height: 0.75rem;
-        }
-        .gauge-bar-foreground {
-            background-image: linear-gradient(to right, #60a5fa, #4ade80);
-            height: 0.75rem;
-            border-radius: 9999px;
-            transition: width 0.5s ease-in-out;
+        .slot {
+            width: 1.75rem;
+            height: 1.75rem;
         }
 
         /* Flash Card */
@@ -311,6 +281,25 @@
         const lskey = "timestables-flashcards";
         const { useState, useEffect, useRef } = React;
 
+        const CoinSlot = ({ number, isCorrect }) => {
+            if (isCorrect) {
+                // Copper coin SVG
+                return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
+                    React.createElement('circle', { cx: "18", cy: "19", r: "17", fill: "#F4900C" }),
+                    React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#FFCC4D" }),
+                    React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#FFE8B6" }),
+                    React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#FFAC33" }),
+                    React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#8C5B1A", fontSize: "14", fontWeight: "bold" }, number)
+                );
+            }
+
+            // Incomplete circle SVG
+            return React.createElement('svg', { viewBox: "0 0 36 36", className: "slot" },
+                React.createElement('circle', { cx: "18", cy: "18", r: "17", fill: "#e5e7eb" }),
+                React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#4b5563", fontSize: "14", fontWeight: "bold" }, number)
+            );
+        };
+
         const TimesTablesFlashCards = () => {
             const [selectedTable, setSelectedTable] = useState(null);
             const [currentCard, setCurrentCard] = useState(0);
@@ -318,7 +307,6 @@
             const [cards, setCards] = useState([]);
             const [userInput, setUserInput] = useState('');
             const [inputState, setInputState] = useState('entering'); // 'entering', 'correct', 'incorrect'
-            const [recentResults, setRecentResults] = useState([]); // Track last 12 results
             const [correctQuestions, setCorrectQuestions] = useState(new Set()); // Track which unique questions answered correctly
             const [skippedCurrent, setSkippedCurrent] = useState(false);
             const [completedStats, setCompletedStats] = useState({});
@@ -407,7 +395,6 @@
 
             const handleTableSelect = (table) => {
                 setSelectedTable(table);
-                setRecentResults([]);
                 setCorrectQuestions(new Set());
             };
 
@@ -423,6 +410,8 @@
                     
                     // If complete and correct
                     if (newInput === correctAnswer) {
+                        const questionKey = `${cards[currentCard].table}x${cards[currentCard].factor}`;
+                        setCorrectQuestions(prev => new Set([...prev, questionKey]));
                         setInputState('correct');
                         setShowAnswer(true);
                         // Auto-click correct after 1 second
@@ -444,25 +433,11 @@
             };
 
             const handleCorrect = () => {
-                if (!skippedCurrent) {
-                    addResult('correct');
-                    // Add this unique question to the set of correctly answered questions
-                    const questionKey = `${cards[currentCard].table}x${cards[currentCard].factor}`;
-                    setCorrectQuestions(prev => new Set([...prev, questionKey]));
-                }
                 nextCard();
             };
 
             const handleIncorrect = () => {
-                addResult('incorrect');
                 nextCard();
-            };
-
-            const addResult = (result) => {
-                setRecentResults(prev => {
-                    const newResults = [...prev, result];
-                    return newResults.slice(-12); // Keep only last 12
-                });
             };
 
             const nextCard = () => {
@@ -479,24 +454,7 @@
 
             const goBack = () => {
                 setSelectedTable(null);
-                setRecentResults([]);
                 setCorrectQuestions(new Set());
-            };
-
-            // Calculate gauge status
-            const getGaugeStatus = () => {
-                const correctCount = correctQuestions.size;
-                const gaugePercentage = correctCount / 12; // Always out of 12
-                
-                if (correctCount === 0) {
-                    return { text: 'starting out', show: true, percentage: 0, color: 'color-gray', score: `${correctCount}/12` };
-                } else if (correctCount === 12) {
-                    return { text: 'perfect!', show: true, percentage: gaugePercentage, color: 'color-yellow', score: `${correctCount}/12` };
-                } else if (correctCount >= 10) {
-                    return { text: 'keep going', show: true, percentage: gaugePercentage, color: 'color-blue', score: `${correctCount}/12` };
-                } else {
-                    return { text: 'getting there', show: true, percentage: gaugePercentage, color: 'color-orange', score: `${correctCount}/12` };
-                }
             };
 
             // Main menu - table selection
@@ -532,7 +490,7 @@
             const currentCardData = cards[currentCard];
             if (!currentCardData) return null;
 
-            const gaugeStatus = getGaugeStatus();
+            const isPerfect = correctQuestions.size === 12;
 
             return React.createElement('div', { className: "container" },
                 React.createElement('div', { className: "learning-session" },
@@ -541,26 +499,19 @@
                         React.createElement('button', {
                             onClick: goBack,
                             className: "back-button"
-                        }, "← Back")
-                    ),
-
-                    // Performance Gauge
-                    gaugeStatus.show && React.createElement('div', { className: "gauge-container" },
-                        React.createElement('div', { className: "gauge-header" },
-                            React.createElement('div', { className: "gauge-score" }, gaugeStatus.score),
-                            React.createElement('div', { className: `gauge-text ${gaugeStatus.color}` }, gaugeStatus.text)
-                        ),
-                        React.createElement('div', { className: "gauge-bar-background" },
-                            React.createElement('div', {
-                                className: "gauge-bar-foreground",
-                                style: { width: `${(gaugeStatus.percentage * 100)}%` }
+                        }, "← Back"),
+                        React.createElement('div', { className: 'slots-container' },
+                            Array.from({ length: 12 }, (_, i) => i + 1).map(factor => {
+                                const questionKey = `${selectedTable}x${factor}`;
+                                const isCorrect = correctQuestions.has(questionKey);
+                                return React.createElement(CoinSlot, { key: factor, number: factor, isCorrect: isCorrect });
                             })
                         )
                     ),
 
                     // Flash card
                     React.createElement('div', { className: "flash-card" },
-                        gaugeStatus.text === 'perfect!' ?
+                        isPerfect ?
                             React.createElement('button', {
                                 onClick: goBack,
                                 className: "yay-button"
