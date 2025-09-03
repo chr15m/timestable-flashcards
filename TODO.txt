@@ -1,10 +1,10 @@
 - [ ] Make the app work entirely offline. Add an empty serviceworker, minimal manifest.json, and the right meta tags so it can be installed as a PWA.
-- [ ] Turn the background of the box pink background for incorrect numbers
 - [ ] Add "juice" to all parts of the app (make a nested list of different places we can add juice)
   - [ ] Juice idea 1...
 
 # Done
 
+- [x] Icon.
 - [x] On the front page, instead of a tick for each timestable completed and a count, use coins for the number of completions. E.g. a copper coin for completed once, silver for completed twice, gold, diamond.
 - [x] Shrink number buttons so the whole UI fits on the screen on tablet and mobile
 - [x] If the number keys are off the bottom of the screen, it scrolls up every time you input an answer and you have to scroll back down again.
