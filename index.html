@@ -368,7 +368,7 @@
         const { useState, useEffect, useRef } = React;
 
         let coinSlotIdCounter = 0;
-        const CoinSlot = ({ number, correctCount }) => {
+        const CoinSlot = ({ number, correctCount, animationDelay }) => {
             const [uniqueId] = useState(() => coinSlotIdCounter++);
 
             if (correctCount >= 4) { // Gem
@@ -388,7 +388,7 @@
                     ),
                     React.createElement('g', { clipPath: `url(#${clipPathId})` },
                         gemPaths.map((p, i) => React.createElement('path', { key: i, fill: p.fill, d: p.d })),
-                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect" })
+                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect", style: { animationDelay } })
                     ),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "white", fontSize: "14", fontWeight: "bold" }, number)
                 );
@@ -406,7 +406,7 @@
                         React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#FFCC4D" }),
                         React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#FFE8B6" }),
                         React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#FFAC33" }),
-                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect" })
+                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect", style: { animationDelay } })
                     ),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#5E3A00", fontSize: "14", fontWeight: "bold" }, number)
                 );
@@ -424,7 +424,7 @@
                         React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#d4d4d8" }),
                         React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#f4f4f5" }),
                         React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#e4e4e7" }),
-                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect" })
+                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect", style: { animationDelay } })
                     ),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#3f3f46", fontSize: "14", fontWeight: "bold" }, number)
                 );
@@ -442,7 +442,7 @@
                         React.createElement('circle', { cx: "18", cy: "17", r: "17", fill: "#B4684D" }),
                         React.createElement('circle', { cx: "18", cy: "18", r: "14", fill: "#E4B49C" }),
                         React.createElement('circle', { cx: "18", cy: "17", r: "14", fill: "#D89376" }),
-                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect" })
+                        React.createElement('rect', { x: "0", y: "0", width: "15", height: "36", className: "shine-effect", style: { animationDelay } })
                     ),
                     React.createElement('text', { x: "18", y: "18", dy: ".3em", textAnchor: "middle", fill: "#4A2519", fontSize: "14", fontWeight: "bold" }, number)
                 );
@@ -689,6 +689,12 @@
                                     React.createElement('div', { className: "table-number" }, table)
                                 );
                             })
+                        ),
+                        React.createElement('div', { style: { display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2rem' } },
+                            React.createElement(CoinSlot, { number: '', correctCount: 1, animationDelay: '0s' }),
+                            React.createElement(CoinSlot, { number: '', correctCount: 2, animationDelay: '0.25s' }),
+                            React.createElement(CoinSlot, { number: '', correctCount: 3, animationDelay: '0.5s' }),
+                            React.createElement(CoinSlot, { number: '', correctCount: 4, animationDelay: '0.75s' })
                         )
                     )
                 );
